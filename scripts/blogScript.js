@@ -30,7 +30,7 @@ function findPreviewBlog(blog, blogs) {
   });
 
   console.log(blogs);
-  
+
   for (let i = 0; i < blogs.length; i++)
     if (blogs[i].id == blog.id) return blogs[i - 1];
 
@@ -70,6 +70,14 @@ window.onload = () => {
   load(blogId);
 };
 
+
+
+
+
+
+
+
+
 function load() {
   fetch("http://localhost:3000/blogs")
     .then((response) => response.json())
@@ -77,8 +85,7 @@ function load() {
 }
 
 function render(blogs) {
-
-  const blog = blogs.filter(b => b.id == blogId)[0];
+  const blog = blogs.filter((b) => b.id == blogId)[0];
 
   blogDetailWrapper.innerHTML = `
     <div class="row">
@@ -93,46 +100,34 @@ function render(blogs) {
     </div>
     `;
 
-    const previewBlog = findPreviewBlog(blog, blogs);
+  makePage(blog, blogs);
+}
 
-    if (previewBlog) {
-      previewBlogLink.href = "http://127.0.0.1:5501/pages/blogDetail.html?id=" + previewBlog.id
-    } else {
-      previewBlogLink.innerText = ""
-    }
+async function makePage(blog, blogs) {
+  const previewBlog = findPreviewBlog(blog, blogs);
 
-    const upcomingBlog = findUpcomingBlog(blog, blogs);
+  if (previewBlog)
+    previewBlogLink.href =
+      "http://127.0.0.1:5501/pages/blogDetail.html?id=" + previewBlog.id;
+  else previewBlogLink.innerText = "";
 
-    if (upcomingBlog) {
-      upcomingBlogLink.href = "http://127.0.0.1:5501/pages/blogDetail.html?id=" + upcomingBlog.id
-    } else {
-      upcomingBlogLink.innerText = ""
-    }
+  const upcomingBlog = findUpcomingBlog(blog, blogs);
+
+  if (upcomingBlog)
+    upcomingBlogLink.href =
+      "http://127.0.0.1:5501/pages/blogDetail.html?id=" + upcomingBlog.id;
+  else upcomingBlogLink.innerText = "";
 }
 
 function generateBase(blog) {
   let base = ``;
 
-  console.log(blog);
-
-  if (blog.texts) {
-    base = generateTexts(blog.base, blog.texts);
-  }
-  if (blog.links) {
-    base = generateA(base, blog.links);
-  }
-  if (blog.quotes) {
-    base = generateQuotes(base, blog.quotes);
-  }
-  if (blog.images) {
-    base = generateImages(base, blog.images);
-  }
-  if (blog.lists) {
-    base = generateLists(base, blog.lists);
-  }
-  if (blog.subtitles) {
-    base = generateSubtitles(base, blog.subtitles);
-  }
+  if (blog.texts) base = generateTexts(blog.base, blog.texts);
+  if (blog.links) base = generateA(base, blog.links);
+  if (blog.quotes) base = generateQuotes(base, blog.quotes);
+  if (blog.images) base = generateImages(base, blog.images);
+  if (blog.lists) base = generateLists(base, blog.lists);
+  if (blog.subtitles) base = generateSubtitles(base, blog.subtitles);
 
   return base;
 }
@@ -177,17 +172,22 @@ function generateImages(base, images) {
 }
 
 function generateQuotes(base, quotes) {
-  for (const quote of quotes) {
-    base = base.replaceAll(quote.id, `<blockquote>${quote.value}</blockquote>`);
-  }
-  return base;
+  return quotes.reduce(
+    (updateBase, quote) =>
+      updateBase.replaceAll(
+        quote.id,
+        `<blockquote>${quote.value}</blockquote>`
+      ),
+    base
+  );
 }
 
 function generateTexts(base, texts) {
-  for (const text of texts)
-    base = base.replaceAll(text.id, `<p class="justify">${text.value}</p>`);
-
-  return base;
+  return texts.reduce(
+    (updateBase, text) =>
+      updateBase.replaceAll(text.id, `<p class="justify">${text.value}</p>`),
+    base
+  );
 }
 
 function generateA(base, as) {

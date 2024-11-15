@@ -80,6 +80,14 @@ a {
   margin-left: 20px;
 }
 
+.about-me:hover {
+  color: white !important;
+  border-color: rgb(30, 144, 255);
+  background: 0px 0px;
+  padding: 10px 20px;
+  margin-left: 20px;
+}
+
 .hamburger {
   cursor: pointer;
   width: 30px;
@@ -98,12 +106,14 @@ a {
   height: 3px;
   background-color: rgb(0, 0, 0);
 }
+
 .hamburger-middle {
   width: 20px;
   height: 3px;
   margin-top: 5px;
   background-color: rgb(0, 0, 0);
 }
+
 .hamburger-bottom {
   width: 20px;
   height: 3px;
@@ -127,10 +137,12 @@ a {
   0% {
     transform: translateY(-2px);
   }
+
   50% {
     opacity: 0.3;
     transform: translateY(-2px);
   }
+
   100% {
     opacity: 0;
     transform: translateX(-30px) translateY(-2px);
@@ -169,6 +181,7 @@ a {
   .nav__links {
     display: none !important;
   }
+
   .hamburger {
     display: block !important;
   }
