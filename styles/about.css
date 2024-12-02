@@ -5,10 +5,13 @@
 
 #header {
   background-color: #fafafc;
-  border-bottom: 1px solid #ddd;
+  /* border-bottom: 1px solid #ddd; */
 }
+
 nav {
-  background-color: #fff;
+  background-color: transparent;
+  /* backdrop-filter: blur(10px); */
+  background-color: #fafafc;
 }
 
 #header {
@@ -27,6 +30,32 @@ nav {
   }
 }
 
+@media screen and (max-width: 750px) {
+  .nav__links {
+    display: none !important;
+  }
+
+  .hamburger {
+    display: block !important;
+  }
+
+  .nav-wrapper {
+    padding: 0 30px !important;
+  }
+
+  #nav {
+    padding: 20px 0;
+  }
+
+  .text-uppercase {
+    padding-bottom: 0px !important;
+  }
+}
+
 .nav-wrapper {
   padding: 0 200px;
+}
+
+.text-uppercase {
+  padding-bottom: 20px;
 }

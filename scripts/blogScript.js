@@ -1,91 +1,77 @@
-const blogId = new URLSearchParams(window.location.search).get("id");
-const blogDetailWrapper = document.querySelector(".blog__detail-wrapper");
+const blogId = new URLSearchParams(window.location.search).get('id')
+const blogDetailWrapper = document.querySelector('.blog__detail-wrapper')
 
 // Line
-const topLine = document.querySelector(".top-line");
+const topLine = document.querySelector('.top-line')
 
 // page links
-const previewBlogLink = document.querySelector("#preview__blog-link");
-const upcomingBlogLink = document.querySelector("#upcoming__blog-link");
+const previewBlogLink = document.querySelector('#preview__blog-link')
+const upcomingBlogLink = document.querySelector('#upcoming__blog-link')
 
-function findUpcomingBlog(blog, blogs) {
-  // sort asc
-  blogs.sort((a, b) => {
-    const dateA = new Date(a.created_at);
-    const dateB = new Date(b.created_at);
-    return dateB - dateA;
-  });
-
-  for (let i = 0; i < blogs.length; i++)
-    if (blogs[i].id === blog.id) return blogs[i + 1];
-
-  return undefined;
+// Find upcoming blog
+function findUpcomingBlog (blog, blogs) {
+  blogs.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+  for (let i = 0; i < blogs.length; i++) {
+    if (blogs[i].id == blog.id) return blogs[i + 1]
+  }
+  return undefined
 }
 
-function findPreviewBlog(blog, blogs) {
-  blogs.sort((a, b) => {
-    const dateA = new Date(a.created_at);
-    const dateB = new Date(b.created_at);
-    return dateB - dateA;
-  });
-
-  console.log(blogs);
-
-  for (let i = 0; i < blogs.length; i++)
-    if (blogs[i].id == blog.id) return blogs[i - 1];
-
-  return undefined;
+// Find preview blog
+function findPreviewBlog (blog, blogs) {
+  blogs.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+  for (let i = 0; i < blogs.length; i++) {
+    if (blogs[i].id == blog.id) return blogs[i - 1]
+  }
+  return undefined
 }
 
-function updateTopLine() {
-  const scrollHeight = document.documentElement.scrollHeight;
-  const clientHeight = document.documentElement.clientHeight;
+// Update top line progress
+function updateTopLine () {
+  const scrollHeight = document.documentElement.scrollHeight
+  const clientHeight = document.documentElement.clientHeight
 
   if (scrollHeight <= clientHeight) {
-    topLine.style.display = "none";
-    return;
+    topLine.style.display = 'none'
+    return
   }
 
-  const scrollPosition = window.scrollY;
-  const scrollableHeight = scrollHeight - clientHeight;
-  const scrollPercentage = (scrollPosition / scrollableHeight) * 100;
+  const scrollPosition = window.scrollY
+  const scrollableHeight = scrollHeight - clientHeight
+  const scrollPercentage = (scrollPosition / scrollableHeight) * 100
 
   if (scrollPosition > 0) {
-    topLine.style.display = "block";
-    topLine.style.width = scrollPercentage + "%";
-  } else topLine.style.display = "none";
+    topLine.style.display = 'block'
+    topLine.style.width = scrollPercentage + '%'
+  } else {
+    topLine.style.display = 'none'
+  }
 }
 
-window.addEventListener("scroll", updateTopLine);
-window.addEventListener("resize", updateTopLine);
+window.addEventListener('scroll', updateTopLine)
+window.addEventListener('resize', updateTopLine)
 
 window.onload = () => {
-  updateTopLine();
+  updateTopLine()
 
   if (!blogId) {
-    window.location.href = "/pages/blog.html";
-    return;
+    window.location.href = '/pages/blog.html'
+    return
   }
 
-  load(blogId);
-};
-
-
-
-
-
-
-
-
-
-function load() {
-  fetch("http://localhost:3000/blogs")
-    .then((response) => response.json())
-    .then((data) => render(data));
+  load(blogId)
 }
 
-function render(blogs) {
-  const blog = blogs.filter((b) => b.id == blogId)[0];
+// Load blogs
+function load () {
+  fetch('http://localhost:3000/blogs')
+    .then(response => response.json())
+    .then(data => render(data))
+}
+
+// Render the blog details
+function render (blogs) {
+  const blog = blogs.filter(b => b.id == blogId)[0]
 
   blogDetailWrapper.innerHTML = `
     <div class="row">
@@ -98,80 +84,85 @@ function render(blogs) {
     <div class="blog__detail-content">
         ${generateBase(blog)}
     </div>
-    `;
+    `
 
-  makePage(blog, blogs);
+  makePage(blog, blogs)
 }
 
-async function makePage(blog, blogs) {
-  const previewBlog = findPreviewBlog(blog, blogs);
+// Create page links for preview and next blogs
+function makePage (blog, blogs) {
+  const previewBlog = findPreviewBlog(blog, blogs)
 
-  if (previewBlog)
-    previewBlogLink.href =
-      "http://127.0.0.1:5501/pages/blogDetail.html?id=" + previewBlog.id;
-  else previewBlogLink.innerText = "";
+  if (previewBlog) {
+    previewBlogLink.href = '/pages/blogDetail.html?id=' + previewBlog.id
+  } else {
+    previewBlogLink.innerText = ''
+    previewBlogLink.style.display = 'none'
+  }
 
-  const upcomingBlog = findUpcomingBlog(blog, blogs);
+  const upcomingBlog = findUpcomingBlog(blog, blogs)
 
-  if (upcomingBlog)
-    upcomingBlogLink.href =
-      "http://127.0.0.1:5501/pages/blogDetail.html?id=" + upcomingBlog.id;
-  else upcomingBlogLink.innerText = "";
+  if (upcomingBlog) {
+    upcomingBlogLink.href = '/pages/blogDetail.html?id=' + upcomingBlog.id
+  } else {
+    upcomingBlogLink.innerText = ''
+    upcomingBlogLink.style.display = 'none'
+  }
 }
 
-function generateBase(blog) {
-  let base = ``;
+// Generate the base structure for the blog
+function generateBase (blog) {
+  let base = ``
 
-  if (blog.texts) base = generateTexts(blog.base, blog.texts);
-  if (blog.links) base = generateA(base, blog.links);
-  if (blog.quotes) base = generateQuotes(base, blog.quotes);
-  if (blog.images) base = generateImages(base, blog.images);
-  if (blog.lists) base = generateLists(base, blog.lists);
-  if (blog.subtitles) base = generateSubtitles(base, blog.subtitles);
+  if (blog.texts) base = generateTexts(blog.base, blog.texts)
+  if (blog.links) base = generateA(base, blog.links)
+  if (blog.quotes) base = generateQuotes(base, blog.quotes)
+  if (blog.images) base = generateImages(base, blog.images)
+  if (blog.lists) base = generateLists(base, blog.lists)
+  if (blog.subtitles) base = generateSubtitles(base, blog.subtitles)
 
-  return base;
+  return base
 }
 
-function generateSubtitles(base, subtitles) {
+// Generate subtitles
+function generateSubtitles (base, subtitles) {
   for (const subtitle of subtitles) {
     base = base.replaceAll(
       subtitle.id,
       `<h4 class="mt-4 mb-4">${subtitle.value}</h4>`
-    );
+    )
   }
-  return base;
+  return base
 }
 
-function generateLists(base, lists) {
-  console.log(lists);
-
+// Generate lists
+function generateLists (base, lists) {
   for (const list of lists) {
-    let cList = `<${list.type}>`;
+    let cList = `<${list.type}>`
 
     for (const item of list.items) {
-      cList += `<li class="cList">${item.value}</li>`;
+      cList += `<li class="cList">${item.value}</li>`
     }
 
-    cList += `</${list.type}>`;
-
-    base = base.replaceAll(list.id, cList);
+    cList += `</${list.type}>`
+    base = base.replaceAll(list.id, cList)
   }
-
-  return base;
+  return base
 }
 
-function generateImages(base, images) {
+// Generate images
+function generateImages (base, images) {
   for (const image of images) {
     base = base.replaceAll(
       image.id,
       `<img class="w-100 mt-1 mb-2" src="${image.url}" alt="${image.alt}">`
-    );
+    )
   }
-
-  return base;
+  return base
 }
 
-function generateQuotes(base, quotes) {
+// Generate quotes
+function generateQuotes (base, quotes) {
   return quotes.reduce(
     (updateBase, quote) =>
       updateBase.replaceAll(
@@ -179,34 +170,36 @@ function generateQuotes(base, quotes) {
         `<blockquote>${quote.value}</blockquote>`
       ),
     base
-  );
+  )
 }
 
-function generateTexts(base, texts) {
+// Generate texts
+function generateTexts (base, texts) {
   return texts.reduce(
     (updateBase, text) =>
       updateBase.replaceAll(text.id, `<p class="justify">${text.value}</p>`),
     base
-  );
+  )
 }
 
-function generateA(base, as) {
+// Generate links
+function generateA (base, as) {
   for (const a of as) {
     base = base.replaceAll(
       a.id,
       `<a style="${a.style}" href="${a.link}">${a.value}</a>`
-    );
+    )
   }
-
-  return base;
+  return base
 }
 
-function generateTitle(titles) {
-  let cTitle = "<p>";
+// Generate title
+function generateTitle (titles) {
+  let cTitle = '<p>'
 
   for (const title of titles) {
-    cTitle += `<span style="${title.style}">${title.value}</span>`;
+    cTitle += `<span style="${title.style}">${title.value}</span>`
   }
-  cTitle += "</p>";
-  return cTitle;
+  cTitle += '</p>'
+  return cTitle
 }

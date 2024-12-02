@@ -40,6 +40,16 @@ a {
   height: calc(100vh - 130px);
 }
 
+@keyframes slide-in {
+  from {
+    transform: translateX(0%);
+  }
+
+  to {
+    transform: translateX(100%);
+  }
+}
+
 .header__wrapper {
   margin-bottom: 100px;
 }
@@ -177,15 +187,27 @@ a {
   }
 }
 
-@media screen and (max-width: 550px) {
-  .nav__links {
-    display: none !important;
+
+@media screen and (max-width: 1150px) {
+  .nav-wrapper {
+    padding: 0 100px !important;
+  }
+}
+
+@media screen and (max-width: 575px) {
+  .nav__link {
+    display: none;
+  }
+
+  #nav {
+    border-bottom: 1px solid #ddd;
   }
 
   .hamburger {
-    display: block !important;
+    display: block;
   }
 }
+
 
 .d-none-c {
   display: none;
@@ -252,4 +274,23 @@ a {
 .short-nav-link a:hover:after {
   width: 100%;
   opacity: 1;
+}
+
+/* ====================Animation================================= */
+/* Animatsiya uchun keyframes */
+@keyframes slideDown {
+  0% {
+    opacity: 0;
+    transform: translateY(-50px);
+  }
+
+  100% {
+    opacity: 3;
+    transform: translateY(0);
+  }
+}
+
+/* Header uchun animatsiya */
+.header {
+  animation: slideDown 2s ease-out;
 }
